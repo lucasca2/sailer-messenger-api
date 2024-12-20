@@ -457,10 +457,7 @@ async def websocket_endpoint(websocket: WebSocket, chat_id: str):
 
     try:
         while True:
-            # Optionally read messages from client if needed
-            # message = await websocket.receive_text()
-            # Handle incoming messages if your scenario requires it
-            await websocket.receive_text()  # If not needed, you can omit this line
+            await websocket.receive_text()
     except WebSocketDisconnect:
         chat_connections[chat_id].remove(websocket)
         if not chat_connections[chat_id]:
