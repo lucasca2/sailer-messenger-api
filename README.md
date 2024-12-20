@@ -30,6 +30,7 @@ Welcome to the Chat Backend Project! This project provides a FastAPI-based backe
      - Instructions to run the application locally.
      - Any additional notes or assumptions made during the implementation.
    - Ensure the application is easy to set up and test on a different machine.
+   - Send the GitHub link with the project to daniel@mysailer.com, and include your name in the email.
 
 ---
 

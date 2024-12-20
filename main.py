@@ -62,6 +62,202 @@ class MarkReadRequest(BaseModel):
     user_id: str
 
 
+predefined_responses = [
+    {"type": "text", "content": "Interesting..."},
+    {"type": "text", "content": "Tell me more!"},
+    {"type": "text", "content": "Got it!"},
+    {"type": "image", "content": "http://example.com/image.png"},
+    {"type": "audio", "content": "http://example.com/audio.mp3"},
+    {"type": "text", "content": "Can you elaborate on that?"},
+    {"type": "text", "content": "I see!"},
+    {"type": "text", "content": "That makes sense."},
+    {"type": "text", "content": "Why do you think that?"},
+    {"type": "text", "content": "I'm not sure I follow."},
+    {"type": "text", "content": "Sounds good!"},
+    {"type": "text", "content": "Let's explore that further."},
+    {"type": "text", "content": "I'm listening..."},
+    {"type": "text", "content": "Fascinating!"},
+    {"type": "text", "content": "That's an interesting perspective."},
+    {"type": "text", "content": "What do you mean by that?"},
+    {"type": "text", "content": "Absolutely!"},
+    {"type": "text", "content": "I understand."},
+    {"type": "text", "content": "What happened next?"},
+    {"type": "text", "content": "Thanks for sharing!"},
+    {"type": "text", "content": "How do you feel about that?"},
+    {"type": "text", "content": "Could you give an example?"},
+    {"type": "text", "content": "That's one way to look at it."},
+    {"type": "text", "content": "I'm curious to know more."},
+    {"type": "text", "content": "I hadn't thought of it that way."},
+    {"type": "text", "content": "Let's dive deeper into this."},
+    {"type": "text", "content": "That's worth considering."},
+    {"type": "text", "content": "Do you agree?"},
+    {"type": "text", "content": "Tell me why that's important."},
+    {"type": "text", "content": "Thanks for pointing that out."},
+    {"type": "text", "content": "What are your thoughts on this?"},
+    {"type": "text", "content": "That's a valid point."},
+    {"type": "text", "content": "I'm intrigued!"},
+    {"type": "text", "content": "What do you suggest?"},
+    {"type": "text", "content": "Let's think this through together."},
+    {"type": "text", "content": "That's an interesting question."},
+    {"type": "text", "content": "I'd love to hear more."},
+    {"type": "text", "content": "How did that happen?"},
+    {"type": "text", "content": "That's quite insightful!"},
+    {"type": "text", "content": "What's your take on this?"},
+    {
+        "type": "text",
+        "content": (
+            "That's a great observation! It really highlights an important point that we can explore further. "
+            "Could you explain your reasoning behind it in more detail?"
+        ),
+    },
+    {
+        "type": "text",
+        "content": (
+            "I appreciate your perspective on this. It opens up an interesting discussion about how we might "
+            "approach this situation differently. What other ideas do you have?"
+        ),
+    },
+    {
+        "type": "text",
+        "content": (
+            "That's an intriguing point of view! It raises several questions about how we can analyze this "
+            "further or find supporting evidence. Let's think about potential solutions together."
+        ),
+    },
+    {
+        "type": "text",
+        "content": (
+            "Your input is really valuable here. It makes me think about the broader implications of this topic "
+            "and how it might impact other areas. Can you expand on this with specific examples?"
+        ),
+    },
+    {
+        "type": "text",
+        "content": (
+            "Thanks for sharing your thoughts! They offer a unique angle that might help us solve the problem "
+            "or understand it better. What are the key challenges or opportunities you see here?"
+        ),
+    },
+    {"type": "image", "content": "https://picsum.photos/id/0/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/1/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/2/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/3/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/4/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/5/5000/3334"},
+    {"type": "image", "content": "https://picsum.photos/id/6/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/7/4728/3168"},
+    {"type": "image", "content": "https://picsum.photos/id/8/5000/3333"},
+    {"type": "image", "content": "https://picsum.photos/id/9/5000/3269"},
+    {"type": "image", "content": "https://picsum.photos/id/10/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/11/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/12/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/13/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/14/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/15/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/16/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/17/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/18/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/19/2500/1667"},
+    {"type": "image", "content": "https://picsum.photos/id/20/3670/2462"},
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/04/03/audio_8afd3e404f.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/04/03/audio_8afd3e404f.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/09/15/audio_c5eb1a7203.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/15/audio_58e98de349.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/04/03/audio_8afd3e404f.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/09/15/audio_c5eb1a7203.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/15/audio_58e98de349.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/10/audio_ace135b9fd.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/10/audio_0726adf887.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2023/05/17/audio_c6792c5e3c.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/09/audio_d6c2276bcc.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/24/audio_f34ad8292e.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/15/audio_945134fe23.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/02/07/audio_977ee73fb0.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/15/audio_a208cf74dc.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2023/09/08/audio_919f65fc08.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2024/06/04/audio_7fffc238ac.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/09/audio_fffa93f048.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2021/08/09/audio_2f331550f9.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2023/03/14/audio_7763cd5c8a.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/09/audio_7735ee7ae1.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/10/audio_61c3f72873.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/15/audio_81383bc6cc.mp3",
+    },
+    {
+        "type": "audio",
+        "content": "https://cdn.pixabay.com/audio/2022/03/24/audio_149bf7e8e8.mp3",
+    },
+]
+
+
 @app.post("/chats")
 def create_chat(req: CreateChatRequest):
     chat_id = str(uuid.uuid4())
@@ -95,15 +291,6 @@ def get_messages(chat_id: str):
 async def _handle_bot_response_and_presence(
     chat_id: str,
 ):
-    # Predefined bot responses: some texts, images, audios
-    predefined_responses = [
-        {"type": "text", "content": "Interesting..."},
-        {"type": "text", "content": "Tell me more!"},
-        {"type": "text", "content": "Got it!"},
-        {"type": "image", "content": "http://example.com/image.png"},
-        {"type": "audio", "content": "http://example.com/audio.mp3"},
-    ]
-
     await asyncio.sleep(random.randint(2, 4))
     await _update_presence(chat_id, BOT_USER_ID, "online")
 
