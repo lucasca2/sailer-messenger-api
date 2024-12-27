@@ -15,10 +15,21 @@ from datetime import datetime
 import uuid
 import random
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite todas as origens
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos
+    allow_headers=["*"],  # Permite todos os cabeçalhos
+)
 
 BOT_USER_ID = "bot_user"
 
@@ -38,6 +49,8 @@ chat_connections = {}  # { chat_id: [WebSocket, WebSocket, ...] }
 class CreateChatRequest(BaseModel):
     participants: List[str]
 
+class AddParticipantRequest(BaseModel):
+    user_id: str
 
 class Message(BaseModel):
     id: str
@@ -263,6 +276,7 @@ def create_chat(req: CreateChatRequest):
     chat_id = str(uuid.uuid4())
     participants = req.participants + [BOT_USER_ID]
     chats[chat_id] = {
+        "created_by": req.participants[0],
         "participants": participants,
         "messages": [],
         "read_receipts": {p: None for p in req.participants},
@@ -271,21 +285,44 @@ def create_chat(req: CreateChatRequest):
             for p in participants
         },
     }
-    return {"chat_id": chat_id, "participants": req.participants}
+    return {"chat_id": chat_id, "participants": req.participants, "created_by": req.participants[0] }
 
 
 @app.get("/chats")
 def list_chats():
     return [
-        {"chat_id": cid, "participants": c["participants"]} for cid, c in chats.items()
+        {"chat_id": cid, "created_by": c["created_by"], "participants": c["participants"]} for cid, c in chats.items()
     ]
 
+@app.get("/chats/{chat_id}")
+def get_chat_info(chat_id: str):
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    return {"chat_id": chat_id, "created_by": chats[chat_id]["created_by"], "participants": chats[chat_id]["participants"]}
 
 @app.get("/chats/{chat_id}/messages")
 def get_messages(chat_id: str):
     if chat_id not in chats:
         raise HTTPException(status_code=404, detail="Chat not found")
     return chats[chat_id]["messages"]
+
+@app.put("/chats/{chat_id}/participants")
+def add_participant(chat_id: str, req: AddParticipantRequest):
+    if chat_id not in chats:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    if req.user_id in chats[chat_id]["participants"]:
+        raise HTTPException(status_code=400, detail="User already in chat")
+
+    chats[chat_id]["participants"].append(req.user_id)
+
+    chats[chat_id]["presence"][req.user_id] = {
+        "status": "offline",
+        "last_seen": None,
+    }
+
+    chats[chat_id]["read_receipts"][req.user_id] = None
+
+    return { "chat_id": chat_id, "participants": chats[chat_id]["participants"]}
 
 
 async def _handle_bot_response_and_presence(
@@ -358,30 +395,24 @@ async def update_presence(chat_id: str, req: PresenceUpdateRequest):
 
     await _update_presence(chat_id, req.user_id, req.status)
 
-    return {"chat_id": chat_id, "user_id": req.user_id, "status": req.status}
+    return {"chat_id": chat_id, "user_id": req.user_id, "status": req.status, "last_seen": datetime.utcnow().isoformat()}
 
 
 async def _update_presence(chat_id, user_id, status):
     logger.info(f"Updating presence for {user_id} in chat {chat_id} to {status}")
     presence = chats[chat_id]["presence"]
-    if status == "offline":
-        presence[user_id] = {
-            "status": "offline",
-            "last_seen": datetime.utcnow().isoformat(),
-        }
-    else:
-        presence[user_id] = {
-            "status": status,
-            "last_seen": presence[user_id]["last_seen"],
-        }
-
+    presence[user_id] = {
+        "status": status,
+        "last_seen": datetime.utcnow().isoformat(),
+    }
+    
     await broadcast_to_chat(
         chat_id,
         "presence_updated",
         {
             "status": status,
             "user_id": user_id,
-            "last_seen": presence[user_id]["last_seen"],
+            "last_seen": datetime.utcnow().isoformat(),
         },
     )
 
